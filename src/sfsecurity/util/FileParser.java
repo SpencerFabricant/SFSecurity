@@ -32,6 +32,11 @@ public class FileParser extends BufferedReader {
 		s = s.trim();
 		return s;
 	}
+	
+	/**
+	 * Gets all lines and closes the file
+	 * @throws IOException
+	 */
 	public ArrayList<String> getLines() throws IOException {
 		ArrayList<String> lines = new ArrayList<String>();
 		String s = this.readLine();
