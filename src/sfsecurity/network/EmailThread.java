@@ -16,7 +16,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import sfsecurity.util.FileParser;
-public class SFEmail extends Thread {
+public class EmailThread extends Thread {
 	static String credsFilename = "data/email_creds";
 	static String addressList = "data/user_addresses";
 	private String from;
@@ -28,7 +28,7 @@ public class SFEmail extends Thread {
 	private String emailText;
 	private boolean readyToRun = false;
 	
-	public SFEmail(Collection<String> attachments) {
+	public EmailThread(Collection<String> attachments) {
 		this();
 		this.attachments.addAll(attachments);
 		this.subject = "Pictures!";
@@ -38,7 +38,7 @@ public class SFEmail extends Thread {
 				+        "	-Spencer";
 	}
 	
-	public SFEmail() {
+	public EmailThread() {
 		readyToRun = false;
 		FileParser fp = null;
 		ArrayList<String> creds = null;
@@ -144,7 +144,7 @@ public class SFEmail extends Thread {
 		ArrayList<String> myAttachments = new ArrayList<String>();
 		myAttachments.add("data/picture.png");
 		myAttachments.add("data/unnamed.jpg");
-		SFEmail thread = new SFEmail(myAttachments);
+		EmailThread thread = new EmailThread(myAttachments);
 		thread.start();
 		System.out.println("Sending email....");
 		thread.join();
