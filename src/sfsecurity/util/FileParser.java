@@ -46,4 +46,15 @@ public class FileParser extends BufferedReader {
 		}
 		return lines;
 	}
+	
+	/**
+	 * closes the file without demanding a try/catch.
+	 */
+	public void close() {
+		try {
+			super.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
