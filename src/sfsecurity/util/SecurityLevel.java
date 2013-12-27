@@ -1,4 +1,4 @@
-package sfsecurity.core;
+package sfsecurity.util;
 
 public enum SecurityLevel {
 	GREEN,  // USER is home.  Do not worry.

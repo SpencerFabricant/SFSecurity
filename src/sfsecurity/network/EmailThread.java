@@ -40,18 +40,13 @@ public class EmailThread extends Thread {
 	
 	public EmailThread() {
 		readyToRun = false;
-		FileParser fp = null;
 		ArrayList<String> creds = null;
 		try {
-			fp = new FileParser(new FileReader(credsFilename));
-			creds = fp.getLines();
-
+			creds = FileParser.readFile(credsFilename);
 		} catch (IOException e) {
 			System.err.println("Error: Unable to read credentials file");
 			e.printStackTrace();
 			return;
-		} finally {
-			if (fp != null) fp.close();
 		}
 		if (creds.size() != 2) {
 			System.err.println("ERROR: Email credentials MUST be only two lines: address and password");
@@ -60,15 +55,11 @@ public class EmailThread extends Thread {
 		from = creds.get(0);
 		password = creds.get(1);
 		try {
-			fp = new FileParser(new FileReader(addressList));
-			to = fp.getLines();
-			fp.close();
+			to = FileParser.readFile(addressList);
 		} catch (IOException e) {
 			System.err.println("Error: Unable to read address list file");
 			e.printStackTrace();
 			return;
-		} finally {
-			if (fp != null) fp.close();
 		}
 		if (to.isEmpty()) {
 			System.err.println("No addresses found");

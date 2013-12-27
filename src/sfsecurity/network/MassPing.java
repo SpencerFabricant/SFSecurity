@@ -2,7 +2,10 @@ package sfsecurity.network;
 
 import java.util.ArrayList;
 
-public class MassPing extends Thread {
+import sfsecurity.util.*;
+
+public class MassPing extends Thread implements Publisher<Boolean> {
+	private ArrayList<Subscriber<Boolean>> subs = new ArrayList<Subscriber<Boolean>>();
 	private static ArrayList<String> hosts;
 	public void run() {
 		ArrayList<Ping> pingThreads = new ArrayList<Ping>(hosts.size());
@@ -14,17 +17,19 @@ public class MassPing extends Thread {
 		}
 				
 		System.out.println("Joining threads.....");
+		boolean result = false;
 		for (Ping p : pingThreads) {
 			try {
 				p.join();
 				if (p.result == true) {
-					System.out.println("Found a match!");
+					result = true;
 					break;
 				}
 			} catch (InterruptedException e) {
 				e.getStackTrace();
 			}
 		}
+		publish(result);
 		System.out.println("joined all threads");
 	}
 	
@@ -39,5 +44,22 @@ public class MassPing extends Thread {
 
 		MassPing massPingThread = new MassPing();
 		massPingThread.start();
+	}
+
+	@Override
+	public void publish(Boolean message) {
+		for (Subscriber<Boolean> sub : subs) {
+			sub.notify(message);
+		}
+	}
+
+	@Override
+	public void addSubscriber(Subscriber<Boolean> sub) {
+		subs.add(sub);
+	}
+
+	@Override
+	public void removeSubscriber(Subscriber<Boolean> sub) {
+		subs.remove(sub);
 	}
 }

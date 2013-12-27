@@ -13,7 +13,7 @@ public class Ping extends Thread {
 		result = ping();
 	}
 	private boolean ping() {
-		// TODO: set a smaller timeout
+		// TODO: set a smaller timeout if you can figure out how.
 		try {
 			String cmd = "";
 			if (System.getProperty("os.name").startsWith("Windows")) {

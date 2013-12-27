@@ -1,12 +1,27 @@
 package sfsecurity.util;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 
 public class FileParser extends BufferedReader {
-
+	
+	public static ArrayList<String> readFile(String filename) throws IOException {
+		FileParser fp = null;
+		ArrayList<String> ret = new ArrayList<String>();
+		try {
+			fp = new FileParser(new BufferedReader(new FileReader(filename)));
+			ret = fp.getLines();
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			if (fp != null)
+				fp.close();
+		}
+		return ret;
+	}
 	public FileParser(Reader reader) {
 		super(reader);
 	}
