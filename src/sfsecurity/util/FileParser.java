@@ -49,8 +49,9 @@ public class FileParser extends BufferedReader {
 	}
 	
 	/**
-	 * Gets all lines and closes the file
+	 * Gets all lines while ignoring comments and closes the file.
 	 * @throws IOException
+	 * @return An arraylist containing all valid lines
 	 */
 	public ArrayList<String> getLines() throws IOException {
 		ArrayList<String> lines = new ArrayList<String>();

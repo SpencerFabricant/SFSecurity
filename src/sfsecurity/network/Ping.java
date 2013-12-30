@@ -4,14 +4,25 @@ import java.io.IOException;
 
 public class Ping extends Thread {
 	String ipAddress;
-	boolean result = false;
-	public Ping(String ip) {
+	public volatile boolean result = false;
+	
+	/**
+	 * Creates a thread that, when run, will attempt to ping pIPAddress
+	 * The result is stored in this thread's <<result>> field after the thread
+	 * finishes running.
+	 * @param pIPAddress
+	 */
+	public Ping(String pIPAddress) {
 		super();
-		ipAddress = ip;
+		ipAddress = pIPAddress;
 	}
 	public void run() {
 		result = ping();
 	}
+	/**
+	 * Attempts to ping the address.  Only called when the thread is started
+	 * @return true if ipAddress can be reached, false otherwise.
+	 */
 	private boolean ping() {
 		// TODO: set a smaller timeout if you can figure out how.
 		try {

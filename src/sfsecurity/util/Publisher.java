@@ -1,6 +1,5 @@
 package sfsecurity.util;
 
-import java.util.Collection;
 
 public interface Publisher<T> {
 	public void publish(T message);

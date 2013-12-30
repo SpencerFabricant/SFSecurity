@@ -1,7 +1,8 @@
-package sfsecurity.network;
+package sfsecurity.old;
 
 import java.util.ArrayList;
 
+import sfsecurity.network.Ping;
 import sfsecurity.util.*;
 
 public class MassPing extends Thread implements Publisher<Boolean> {
@@ -49,7 +50,7 @@ public class MassPing extends Thread implements Publisher<Boolean> {
 	@Override
 	public void publish(Boolean message) {
 		for (Subscriber<Boolean> sub : subs) {
-			sub.notify(message);
+			sub.update(message);
 		}
 	}
 
