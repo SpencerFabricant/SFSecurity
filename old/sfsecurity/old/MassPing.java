@@ -12,7 +12,7 @@ public class MassPing extends Thread implements Publisher<Boolean> {
 		ArrayList<Ping> pingThreads = new ArrayList<Ping>(hosts.size());
 		System.out.println("starting threads....");
 		for (String host : hosts) {
-			Ping p = new Ping(host);
+			Ping p = new Ping(host, this);
 			pingThreads.add(p);
 			p.start();
 		}

@@ -25,6 +25,7 @@ public class Ping extends Thread {
 	 */
 	private boolean ping() {
 		// TODO: set a smaller timeout if you can figure out how.
+		Process myProcess = null;
 		try {
 			String cmd = "";
 			if (System.getProperty("os.name").startsWith("Windows")) {
@@ -32,7 +33,7 @@ public class Ping extends Thread {
 			} else { // system is unix-based
 				cmd = "ping -c 1 " + ipAddress;
 			}
-			Process myProcess = Runtime.getRuntime().exec(cmd);
+			myProcess = Runtime.getRuntime().exec(cmd);
 			myProcess.waitFor();
 			if (myProcess.exitValue() == 0) {
 				return true;
@@ -40,10 +41,16 @@ public class Ping extends Thread {
 				return false;
 			}
 		} catch (IOException e) {
-			
+			// this **shouldn't** happen.  If it does, we're in trouble
+			e.printStackTrace();
 		} catch (InterruptedException e) {
-			
+			if (myProcess != null)
+				myProcess.destroy();
+			return false;
 		}
 		return false;
+	}
+	public void kill() {
+		this.interrupt();		
 	}
 }
