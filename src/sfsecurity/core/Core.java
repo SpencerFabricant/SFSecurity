@@ -88,12 +88,19 @@ public class Core {
 	private final static long maxMotionInterval = 5000; 
 	public void handleMotion(boolean motion) {
 		synchronized(statusLock) {
-			if (this.status.equals(SecurityLevel.GREEN)) {
-			} else if (this.status.equals(SecurityLevel.ORANGE)){
-				this.status = SecurityLevel.RED;
-			}
-			if (this.status.equals(SecurityLevel.RED)) {
-				
+			if (motion == false) {
+				if (status.equals(SecurityLevel.RED)) {
+					if (System.currentTimeMillis() - lastMotion >= maxMotionInterval) {
+						status = SecurityLevel.ORANGE;
+					}
+				}
+			} else {
+				// motion is true
+				lastMotion = System.currentTimeMillis();
+				if (status.equals(SecurityLevel.ORANGE)) {
+					status = SecurityLevel.RED;
+					// then alert some thread to capture motion
+				}
 			}
 		}
 		return;
