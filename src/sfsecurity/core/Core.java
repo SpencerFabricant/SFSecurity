@@ -3,7 +3,7 @@ package sfsecurity.core;
 import sfsecurity.util.SecurityLevel;
 
 public class Core {
-	private Object pingLock = new Object();
+	private Object statusLock = new Object();
 	// status: initialized to green level
 	public volatile SecurityLevel status = SecurityLevel.GREEN;
 	public volatile boolean isRunning = true;
@@ -49,7 +49,7 @@ public class Core {
 	 * @return -- int: The number of milliseconds the calling thread should sleep for.
 	 */
 	public int handlePing(boolean ping) {
-		synchronized(pingLock) {
+		synchronized(statusLock) {
 			if (ping == true) {
 				// User is home.  Three possibilities for status:
 					// green -> green
@@ -82,6 +82,21 @@ public class Core {
 				return 0;
 			}
 		}
+	}
+	
+	private long lastMotion = System.currentTimeMillis();
+	private final static long maxMotionInterval = 5000; 
+	public void handleMotion(boolean motion) {
+		synchronized(statusLock) {
+			if (this.status.equals(SecurityLevel.GREEN)) {
+			} else if (this.status.equals(SecurityLevel.ORANGE)){
+				this.status = SecurityLevel.RED;
+			}
+			if (this.status.equals(SecurityLevel.RED)) {
+				
+			}
+		}
+		return;
 	}
 	
 }

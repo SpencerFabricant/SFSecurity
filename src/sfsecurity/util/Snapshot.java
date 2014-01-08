@@ -10,7 +10,7 @@ import java.util.Date;
  * @author Spencer Fabricant
  */
 public class Snapshot {
-	private static final int threshold = 20;
+	private static final int threshold = 50;
 	private static final int SMALL_SIZE = 16;
 	public final Date timestamp;
 	public final BufferedImage image;
@@ -24,7 +24,6 @@ public class Snapshot {
 		g.dispose();
 	}
 	public boolean detectMotion(Snapshot snapshot) {
-		// TODO
 		if (compare(snapshot) >= threshold) return true;
 		return false;
 	}

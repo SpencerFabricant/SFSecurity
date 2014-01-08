@@ -6,7 +6,7 @@ import com.github.sarxos.webcam.Webcam;
 import sfsecurity.util.Snapshot;
 
 public class TestWebcam {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		System.out.println("Setting up webcam...");
 		Webcam webcam = Webcam.getDefault();
 		System.out.println("Initializing webcam...");
@@ -18,9 +18,13 @@ public class TestWebcam {
 		System.out.println("...");
 		for (int i=0;i<300;i++) {
 			s2 = new Snapshot(webcam.getImage());
-			System.out.println(s.compare(s2));
+			if (s.detectMotion(s2)) {
+				ImageIO.write(s2.image, "JPG", new File("tmpfiles/image"+i+".jpg"));
+				System.out.println("Written!");
+			}
+			System.out.println(i);
+			Thread.sleep(50);
 			s = s2;
-//			ImageIO.write(s.smallImage, "JPG", new File("tmpfiles/image"+i+".jpg"));
 		}
 //		int counter = 0;
 //		while(counter < 300){
