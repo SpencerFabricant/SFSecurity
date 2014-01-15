@@ -12,10 +12,12 @@ import java.util.Date;
 public class Snapshot {
 	private static final int threshold = 50;
 	private static final int SMALL_SIZE = 16;
+	public final String filename;
 	public final Date timestamp;
 	public final BufferedImage image;
 	public final BufferedImage smallImage;
 	public Snapshot(BufferedImage image) {
+		filename = System.currentTimeMillis() + ".jpg";
 		timestamp = new Date();
 		this.image = image;
 		smallImage = new BufferedImage(SMALL_SIZE, SMALL_SIZE, BufferedImage.TYPE_BYTE_GRAY);

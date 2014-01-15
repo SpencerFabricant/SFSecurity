@@ -16,10 +16,11 @@ public class TestWebcam {
 		Snapshot s = new Snapshot(image);
 		Snapshot s2;
 		System.out.println("...");
-		for (int i=0;i<300;i++) {
+		int i=0;
+		while(i<100) {
 			s2 = new Snapshot(webcam.getImage());
 			if (s.detectMotion(s2)) {
-				ImageIO.write(s2.image, "JPG", new File("tmpfiles/image"+i+".jpg"));
+				ImageIO.write(s2.image, "JPG", new File("tmpfiles/image"+(i++)+".jpg"));
 				System.out.println("Written!");
 			}
 			System.out.println(i);

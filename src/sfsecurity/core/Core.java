@@ -87,6 +87,7 @@ public class Core {
 	private long lastMotion = System.currentTimeMillis();
 	private final static long maxMotionInterval = 5000; 
 	public void handleMotion(boolean motion) {
+		if (status.equals(SecurityLevel.GREEN)) return;
 		synchronized(statusLock) {
 			if (motion == false) {
 				if (status.equals(SecurityLevel.RED)) {
