@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import sfsecurity.core.Core;
-import sfsecurity.network.Ping;
 import sfsecurity.util.FileParser;
+import sfsecurity.util.Ping;
 import sfsecurity.util.SecurityLevel;
 
 

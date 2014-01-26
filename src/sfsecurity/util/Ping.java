@@ -1,29 +1,16 @@
-package sfsecurity.network;
+package sfsecurity.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Ping extends Thread {
-	String ipAddress;
-	public volatile boolean result = false;
 	
-	/**
-	 * Creates a thread that, when run, will attempt to ping pIPAddress
-	 * The result is stored in this thread's <<result>> field after the thread
-	 * finishes running.
-	 * @param pIPAddress
-	 */
-	public Ping(String pIPAddress) {
-		super();
-		ipAddress = pIPAddress;
-	}
-	public void run() {
-		result = ping();
-	}
 	/**
 	 * Attempts to ping the address.  Only called when the thread is started
 	 * @return true if ipAddress can be reached, false otherwise.
 	 */
-	private boolean ping() {
+	public static boolean ping(String ipAddress) {
 		// TODO: set a smaller timeout if you can figure out how.
 		Process myProcess = null;
 		try {
@@ -34,7 +21,15 @@ public class Ping extends Thread {
 				cmd = "ping -c 1 " + ipAddress;
 			}
 			myProcess = Runtime.getRuntime().exec(cmd);
-			myProcess.waitFor();
+			BufferedReader processInput = new BufferedReader(new InputStreamReader(myProcess.getInputStream()));
+			String s;
+			while((s = processInput.readLine()) != null) {
+				System.out.println(s);
+				if (s.contains("unreachable")) {
+					myProcess.destroy();
+					return false;
+				}
+			}
 			if (myProcess.exitValue() == 0) {
 				return true;
 			} else {
@@ -43,14 +38,7 @@ public class Ping extends Thread {
 		} catch (IOException e) {
 			// this **shouldn't** happen.  If it does, we're in trouble
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			if (myProcess != null)
-				myProcess.destroy();
-			return false;
 		}
 		return false;
-	}
-	public void kill() {
-		this.interrupt();		
 	}
 }

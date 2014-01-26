@@ -1,16 +1,31 @@
 package sfsecurity.core;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import sfsecurity.util.FileParser;
 import sfsecurity.util.SecurityLevel;
 
 public class Core {
+	public static final String USER_IPS_FILENAME = "data/user_ip.txt";
 	private Object statusLock = new Object();
 	// status: initialized to green level
 	public volatile SecurityLevel status = SecurityLevel.GREEN;
 	public volatile boolean isRunning = true;
 	
+	private static ArrayList<PingThread> pingThreads;
+	
 	public Core() {
-		
+		MAX_PING_INTERVAL = 3000; // 16 minutes in milliseconds //
 		initSensors();
+	}
+	
+	public void go() {
+		/* start ping threads */
+		for (PingThread p : pingThreads) {
+			System.out.println("Starting thread....");
+			p.start();
+		}
 	}
 	
 	/**
@@ -26,19 +41,34 @@ public class Core {
 		
 		/* init default ping variables */
 		lastPingTime = System.currentTimeMillis();
-		interval = 960000; // 16 minutes in milliseconds //
-		greenWait = 1000;
-		orangeWait = 1000;
-		redWait = 1000;
+
+		greenWait = 100;
+		orangeWait = 100;
+		redWait = 100;
+
 		// then load properties file and attempt to update variables accordingly //
+			// TODO
 		
-		
-		// initialize and start running ping threads //
+		/* Obtain user IP addresses */
+		ArrayList<String> ips = null;
+		try {
+			ips = FileParser.readFile(USER_IPS_FILENAME);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Could not find user IP address file.  Exiting...");
+			System.exit(-1);
+		}
+		/* initialize ping threads */
+		pingThreads = new ArrayList<PingThread>();
+		for (String ip : ips) {
+			System.out.println(ip);
+			pingThreads.add(new PingThread(this, ip));
+		}
 	}
 	
 	/** object variables for ping handling */
 	private long lastPingTime; // the previous time that the user was successfully pinged
-	private long interval; // max interval between pings before the system concludes that the user is not present
+	private final long MAX_PING_INTERVAL; // max interval between pings before the system concludes that the user is not present
 	private int greenWait; // wait time for ping when status is green
 	private int orangeWait;
 	private int redWait;
@@ -49,6 +79,7 @@ public class Core {
 	 * @return -- int: The number of milliseconds the calling thread should sleep for.
 	 */
 	public int handlePing(boolean ping) {
+		System.out.println(status.toString());
 		synchronized(statusLock) {
 			if (ping == true) {
 				// User is home.  Three possibilities for status:
@@ -60,7 +91,7 @@ public class Core {
 					lastPingTime = System.currentTimeMillis();
 				}
 			} else { // ping returned false //
-				if (System.currentTimeMillis() - lastPingTime >= interval) {
+				if (System.currentTimeMillis() - lastPingTime >= MAX_PING_INTERVAL) {
 					// so the user is not home.  Three possibilities for status:
 						// green -> orange
 						// orange -> orange
@@ -107,4 +138,13 @@ public class Core {
 		return;
 	}
 	
+	
+	public static void main(String[] args) {
+		Core core = new Core();
+		core.go();
+		
+		while(true) {
+			Thread.yield();
+		}
+	}
 }

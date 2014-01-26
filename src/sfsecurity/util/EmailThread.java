@@ -1,4 +1,4 @@
-package sfsecurity.network;
+package sfsecurity.util;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +14,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import sfsecurity.util.FileParser;
 public class EmailThread extends Thread {
 	static String credsFilename = "data/email_creds";
 	static String addressList = "data/user_addresses";

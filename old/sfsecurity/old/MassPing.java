@@ -2,7 +2,6 @@ package sfsecurity.old;
 
 import java.util.ArrayList;
 
-import sfsecurity.network.Ping;
 import sfsecurity.util.*;
 
 public class MassPing extends Thread implements Publisher<Boolean> {

@@ -25,7 +25,7 @@ public class Snapshot {
 		g.drawImage(image, 0, 0, SMALL_SIZE, SMALL_SIZE, null);
 		g.dispose();
 	}
-	public boolean detectMotion(Snapshot snapshot) {
+	public boolean isMotion(Snapshot snapshot) {
 		if (compare(snapshot) >= threshold) return true;
 		return false;
 	}

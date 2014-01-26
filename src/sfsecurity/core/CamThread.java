@@ -24,7 +24,7 @@ public class CamThread extends Thread {
 		System.out.println("...");
 		for (int i=0;i<300;i++) {
 			s2 = new Snapshot(webcam.getImage());
-			if (s.detectMotion(s2)) {
+			if (s.isMotion(s2)) {
 				try {
 					ImageIO.write(s2.image, "JPG", new File("tmpfiles/image"+i+".jpg"));
 				} catch (IOException e) {
@@ -34,7 +34,6 @@ public class CamThread extends Thread {
 				System.out.println("Written!");
 			}
 			System.out.println(i);
-			sleep(50);
 			s = s2;
 		}
 	}

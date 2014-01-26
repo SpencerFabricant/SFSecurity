@@ -19,7 +19,7 @@ public class TestWebcam {
 		int i=0;
 		while(i<100) {
 			s2 = new Snapshot(webcam.getImage());
-			if (s.detectMotion(s2)) {
+			if (s.isMotion(s2)) {
 				ImageIO.write(s2.image, "JPG", new File("tmpfiles/image"+(i++)+".jpg"));
 				System.out.println("Written!");
 			}

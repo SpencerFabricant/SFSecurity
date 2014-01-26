@@ -8,6 +8,12 @@ import java.util.ArrayList;
 
 public class FileParser extends BufferedReader {
 	
+	/**
+	 * Reads the file, and closes it.
+	 * @param filename
+	 * @return An ArrayList<String> of all valid lines in the file.
+	 * @throws IOException
+	 */
 	public static ArrayList<String> readFile(String filename) throws IOException {
 		FileParser fp = null;
 		ArrayList<String> ret = new ArrayList<String>();
