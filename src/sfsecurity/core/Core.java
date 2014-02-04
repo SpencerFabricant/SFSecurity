@@ -210,9 +210,15 @@ public class Core {
 	public static void main(String[] args) {
 		Core core = new Core();
 		core.go();
-		Scanner s = new Scanner(System.in);
+		Scanner scanner = new Scanner(System.in);
 		while(true) {
-			
+			if (scanner.hasNext()) {
+				String s = scanner.next();
+				if (s.equalsIgnoreCase("s")) {
+					System.out.println(core.statusLock.toString());
+				}
+			}
+			Thread.yield();
 		}
 	}
 }
