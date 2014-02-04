@@ -15,7 +15,11 @@ public class Cam {
 		webcam = Webcam.getDefault();
 		webcam.open();
 	}
+	public String savePicture() throws IOException {
+		return savePicture(ROOT_DIRECTORY);
+	}
 	public String savePicture(String directory) throws IOException {
+		if (directory == null) directory = ROOT_DIRECTORY;
 		String name = directory + ("pic_" +System.currentTimeMillis()) + ".jpg";
 		ImageIO.write(webcam.getImage(),
 				"JPG", new File(name));

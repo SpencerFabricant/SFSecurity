@@ -2,7 +2,10 @@ package sfsecurity.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
+import sfsecurity.model.Cam;
+import sfsecurity.util.EmailThread;
 import sfsecurity.util.FileParser;
 import sfsecurity.util.SecurityLevel;
 
@@ -14,7 +17,7 @@ public class Core {
 	public volatile boolean isRunning = true;
 	
 	private static ArrayList<PingThread> pingThreads;
-	
+	private static ArrayList<CamThread> camThreads;
 	public Core() {
 		MAX_PING_INTERVAL = 3000; // 16 minutes in milliseconds //
 		initSensors();
@@ -26,6 +29,13 @@ public class Core {
 			System.out.println("Starting thread....");
 			p.start();
 		}
+		System.out.println("Ping threads started");
+		// start cam thread //
+		for (CamThread camThread : camThreads) {
+			camThread.start();
+		}
+		System.out.println("Cam thread started");
+		
 	}
 	
 	/**
@@ -64,6 +74,11 @@ public class Core {
 			System.out.println(ip);
 			pingThreads.add(new PingThread(this, ip));
 		}
+		System.out.println("initialized ping threads");
+		camThreads = new ArrayList<CamThread>();
+		camThreads.add(new CamThread(this));
+		System.out.println("initialized camera thread");
+		
 	}
 	
 	/** object variables for ping handling */
@@ -115,36 +130,89 @@ public class Core {
 		}
 	}
 	
+	
+	private static final int MOTION_WAIT_GREEN = 1000;
+	private static final int MOTION_WAIT_ORANGE = 50;
+	private static final int MOTION_WAIT_RED = 50;
 	private long lastMotion = System.currentTimeMillis();
-	private final static long maxMotionInterval = 5000; 
-	public void handleMotion(boolean motion) {
-		if (status.equals(SecurityLevel.GREEN)) return;
+	private long lastAlertTime = 0;
+	private final static long ALERT_COOLDOWN_INTERVAL = 20000; 
+	public long handleMotion(boolean motion, Cam cam) {
+		SecurityLevel previousStatus;
+		SecurityLevel newStatus;
 		synchronized(statusLock) {
+		previousStatus = status;
+		newStatus = status;
+		for (int i=0;i<1;i++) { // just a single iteration, so the breaks work
+			if (status.equals(SecurityLevel.GREEN)) {
+				newStatus = status;
+			}
 			if (motion == false) {
 				if (status.equals(SecurityLevel.RED)) {
-					if (System.currentTimeMillis() - lastMotion >= maxMotionInterval) {
+					if (System.currentTimeMillis() - lastMotion >= ALERT_COOLDOWN_INTERVAL) {
 						status = SecurityLevel.ORANGE;
+						newStatus = SecurityLevel.ORANGE;
+						break;
 					}
+					break;
 				}
 			} else {
 				// motion is true
 				lastMotion = System.currentTimeMillis();
 				if (status.equals(SecurityLevel.ORANGE)) {
 					status = SecurityLevel.RED;
-					// then alert some thread to capture motion
+					newStatus = SecurityLevel.RED;
 				}
+				break;
 			}
+		}}
+		
+		// so the status is properly changed.  Now make do the appropriate stuff
+		// and return the appropriate amount.  Just wanted to relieve the lock.
+		if (newStatus.equals(SecurityLevel.GREEN)) {
+			return MOTION_WAIT_GREEN;
 		}
-		return;
+		if (newStatus.equals(SecurityLevel.ORANGE)) {
+			return MOTION_WAIT_ORANGE;
+		}
+		// newStatus is red //
+		if (previousStatus.equals(SecurityLevel.ORANGE)) {
+			lastAlertTime = System.currentTimeMillis();
+			sendEmailAlert(cam);
+		} else {
+			if (motion && (System.currentTimeMillis() - lastAlertTime > ALERT_COOLDOWN_INTERVAL)) {
+				// send out another alert
+				lastAlertTime = System.currentTimeMillis();
+				sendEmailAlert(cam);
+			}
+			return MOTION_WAIT_RED;
+		}
+		System.err.println("It should not reach this line");
+		return 0;
 	}
 	
+	/**
+	 * Captures image from the camera and sends out an email alert
+	 * 
+	 */
+	private void sendEmailAlert(Cam cam) {
+		ArrayList<String> attachments = new ArrayList<String>();
+		try {
+			attachments.add(cam.savePicture());
+			attachments.add(cam.savePicture());
+			EmailThread.sendEmail(attachments);
+			cam.recordVideo(10);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void main(String[] args) {
 		Core core = new Core();
 		core.go();
-		
+		Scanner s = new Scanner(System.in);
 		while(true) {
-			Thread.yield();
+			
 		}
 	}
 }

@@ -128,6 +128,12 @@ public class EmailThread extends Thread {
 		
 	}
 	
+	public static void sendEmail(Collection<String> attachments) {
+		EmailThread thread = new EmailThread(attachments);
+		thread.start();
+		return;
+	}
+	
 	public static void main(String[] args) throws InterruptedException {
 		/** test this thread */
 		ArrayList<String> myAttachments = new ArrayList<String>();

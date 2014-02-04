@@ -5,36 +5,36 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import com.github.sarxos.webcam.Webcam;
+
+import sfsecurity.model.Cam;
 import sfsecurity.util.Snapshot;
 
+/**
+ * This is the thread that controls the camera and eventually feeds back information
+ * to the core.
+ */
 public class CamThread extends Thread {
-	Webcam webcam;
-	private boolean motionMode;
-	private long motionStart;
-	public CamThread() {
-		motionMode = false;
-		motionStart = 0;
-		Webcam webcam = Webcam.getDefault();
-		webcam.open();
+	
+	private Cam cam;
+	private Core core;
+	public CamThread(Core core) {
+		cam = new Cam();
+		this.core = core;
 	}
 	public void run() {
-		BufferedImage image = webcam.getImage();
-		Snapshot s = new Snapshot(image);
+		System.out.println("Running CamThread...");
+		Snapshot s1 = cam.getSnapshot();
 		Snapshot s2;
-		System.out.println("...");
-		for (int i=0;i<300;i++) {
-			s2 = new Snapshot(webcam.getImage());
-			if (s.isMotion(s2)) {
-				try {
-					ImageIO.write(s2.image, "JPG", new File("tmpfiles/image"+i+".jpg"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("Written!");
+		boolean isMotion;
+		while(true) {
+			s2 = s1;
+			s1 = cam.getSnapshot();
+			isMotion = s1.isMotion(s2);
+			try {
+				sleep(core.handleMotion(isMotion, cam));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			System.out.println(i);
-			s = s2;
 		}
 	}
 	/* When motion is detected:
