@@ -199,10 +199,13 @@ public class Core {
 		ArrayList<String> attachments = new ArrayList<String>();
 		try {
 			attachments.add(cam.savePicture());
+			Thread.sleep(1000); // try to get two distinct pics
 			attachments.add(cam.savePicture());
 			EmailThread.sendEmail(attachments);
 			cam.recordVideo(10);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
