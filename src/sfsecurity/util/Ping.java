@@ -24,7 +24,7 @@ public class Ping extends Thread {
 			BufferedReader processInput = new BufferedReader(new InputStreamReader(myProcess.getInputStream()));
 			String s;
 			while((s = processInput.readLine()) != null) {
-				System.out.println(s);
+				// System.out.println(s);
 				if (s.contains("unreachable")) {
 					myProcess.destroy();
 					return false;

@@ -19,7 +19,7 @@ public class Core {
 	private static ArrayList<PingThread> pingThreads;
 	private static ArrayList<CamThread> camThreads;
 	public Core() {
-		MAX_PING_INTERVAL = 3000; // 16 minutes in milliseconds //
+		MAX_PING_INTERVAL = 30000; // 16 minutes in milliseconds //
 		initSensors();
 	}
 	
@@ -101,6 +101,7 @@ public class Core {
 					// green -> green
 					// orange -> green
 					// red -> green
+				System.out.println("TRUE PING");
 				if (! this.status.equals(SecurityLevel.GREEN)) {
 					status = SecurityLevel.GREEN;
 					lastPingTime = System.currentTimeMillis();
@@ -179,6 +180,7 @@ public class Core {
 		if (previousStatus.equals(SecurityLevel.ORANGE)) {
 			lastAlertTime = System.currentTimeMillis();
 			sendEmailAlert(cam);
+			return MOTION_WAIT_RED;
 		} else {
 			if (motion && (System.currentTimeMillis() - lastAlertTime > ALERT_COOLDOWN_INTERVAL)) {
 				// send out another alert
@@ -187,8 +189,6 @@ public class Core {
 			}
 			return MOTION_WAIT_RED;
 		}
-		System.err.println("It should not reach this line");
-		return 0;
 	}
 	
 	/**
