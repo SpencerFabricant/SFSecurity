@@ -202,7 +202,9 @@ public class Core {
 			Thread.sleep(1000); // try to get two distinct pics
 			attachments.add(cam.savePicture());
 			EmailThread.sendEmail(attachments);
-			cam.recordVideo(10);
+			System.out.println("Email sent.  Recording video...");
+			String s = cam.recordMotion(30);
+			System.out.println("Saved motion video to " + s);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {

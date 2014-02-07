@@ -21,10 +21,41 @@ public class Cam {
 	public String savePicture(String directory) throws IOException {
 		if (directory == null) directory = ROOT_DIRECTORY;
 		String name = directory + ("pic_" +System.currentTimeMillis()) + ".jpg";
-		ImageIO.write(webcam.getImage(),
-				"JPG", new File(name));
+		savePicture(webcam.getImage(), name);
 		return name;
 	}
+	public void savePicture(BufferedImage im, String name) throws IOException {
+		ImageIO.write(im, "JPG", new File(name));
+	}
+	
+	/**
+	 * This function works like recordVideo(), but it only saves images when
+	 * there is motion
+	 * Smart video capture that only saves images when there is motion
+	 * @param seconds -- max duration
+	 * @return the absolute path of the directory that it is saved to
+	 */
+	public String recordMotion(int seconds) {
+		String directory = ROOT_DIRECTORY + System.currentTimeMillis() + "/";
+		try {
+			(new File(directory)).mkdirs();
+			Snapshot s1 = new Snapshot(webcam.getImage());
+			Snapshot s2;
+			savePicture(s1.image, directory+"pic_"+System.currentTimeMillis()+".jpg");
+			long endTime = System.currentTimeMillis() + (seconds * 1000);
+			while(System.currentTimeMillis() < endTime) {
+				s2 = new Snapshot(webcam.getImage());
+				if (s1.isMotion(s2)) {
+					savePicture(s2.image, directory+"pic_"+System.currentTimeMillis()+".jpg");
+					s1 = s2;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return (new File(directory)).getAbsolutePath();
+	}
+	
 	/** Returns the name of the video's frames directory */
 	public String recordVideo(int seconds) {
 		String directory = ROOT_DIRECTORY + System.currentTimeMillis() + "/";
